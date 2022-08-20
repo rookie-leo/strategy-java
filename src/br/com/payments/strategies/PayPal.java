@@ -1,6 +1,7 @@
 package br.com.payments.strategies;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +22,41 @@ public class PayPal implements PaymentStrategy {
 
 	@Override
 	public boolean pay(int paymentAmount) {
-		// TODO Auto-generated method stub
-		return false;
+		if (signedIn) {
+			System.out.println("Paying " + paymentAmount + " using Paypal");
+			return true;
+		} else {			
+			return false;
+		}
 	}
 
 	@Override
 	public void collectPaymentDetails() {
-		// TODO Auto-generated method stub
-		
+		try {
+			while (!signedIn) {
+				System.out.println("Enter the user's email: ");
+				email = READER.readLine();
+				System.out.println("Enter the password: ");
+				password = READER.readLine();
+				
+				if (verify()) {
+					System.out.println("Data verification has been successful!");
+				} else {
+					System.out.println("Wrong email or password");
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
+	private boolean verify() {
+		setSignedIn(email.equals(DATA_BASE.get(password)));
+		return signedIn;
+	}
+
+	public void setSignedIn(boolean signedIn) {
+		this.signedIn = signedIn;
+	}
+	
 }
